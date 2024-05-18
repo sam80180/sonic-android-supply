@@ -1,0 +1,11 @@
+FROM centos:7.6.1810
+WORKDIR /app
+ENV CGO_ENABLED=1 GO111MODULE=on GOPATH=/go GOOS=linux GOLANG_VERSION=1.20.14 \
+    PATH=/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+RUN yum install -y gcc openssl-devel; \
+    cd /tmp; curl https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz --output go.tar.gz; tar -C /usr/local -xzf go.tar.gz; rm -f go.tar.gz
+#CMD ["/bin/bash"]
+CMD ["/bin/bash", "-c", "go mod tidy; go mod vendor; go build"]
+
+# References:
+# https://www.ovhcloud.com/en-gb/community/tutorials/how-to-install-go-centos/

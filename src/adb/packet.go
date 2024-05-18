@@ -2,11 +2,13 @@ package adb
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"strconv"
 )
 
@@ -79,3 +81,12 @@ func (pkt Packet) DumpToStdout() {
 	dumper.Write(pkt.Body)
 	dumper.Close()
 }
+
+func (pkt *Packet) ExtractADBRSAPublicKeyFromPayload() ([]byte, error) {
+	REGEX_ADB_PUBKEY := regexp.MustCompile(`(?m)^((?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?)\x00?(\s.*\s*)?$`) // https://github.com/openstf/stf/issues/1030#issuecomment-479487994
+	trimmedBody := pkt.BodySkipNull()
+	if !REGEX_ADB_PUBKEY.Match(trimmedBody) {
+		return nil, fmt.Errorf("unrecognizable public key format")
+	} // end if
+	return base64.StdEncoding.DecodeString(string(REGEX_ADB_PUBKEY.FindSubmatch(trimmedBody)[1]))
+} // end ExtractADBRSAPublicKeyFromPayload()

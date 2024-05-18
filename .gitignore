@@ -1,2 +1,6 @@
 .idea/
+.vscode/
 dist/
+vendor/
+sonic-android-supply
+sonic-android-supply.exe

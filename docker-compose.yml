@@ -1,0 +1,11 @@
+version: "3"
+services:
+  build_sas:
+    build:
+      context: "."
+      dockerfile: "./Dockerfile_build"
+    container_name: "build_sas"
+    image: "build_sas"
+    tty: true
+    volumes:
+    - ".:/app"
